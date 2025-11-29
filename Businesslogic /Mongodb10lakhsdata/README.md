@@ -1,11 +1,5 @@
 # NPCI-Style MongoDB Seeder
 
-#brew services start mongodb-community@7.0
-
-
-
-
-
 A Go-based simulator that floods MongoDB with ~2.5 million production-grade payment transactions (25 lakh) resembling NPCI/UPI/IMPS traffic. The generator deliberately injects common production issues such as duplicate references, SLA breaches, stale statuses, AML hits, and device compromises so downstream systems can be validated under stress.
 
 ## Features
@@ -46,9 +40,24 @@ A Go-based simulator that floods MongoDB with ~2.5 million production-grade paym
    go run ./cmd/seed
    ```
 
-4. **Expected output**
-   - Logs progress every few seconds: `progress: 400000/2500000 (16.00%)`
-   - Final summary printing inserted count, failures, and elapsed time.
+4. **Start MongoDB (if needed)**
+
+   ```bash
+   brew services start mongodb-community@7.0
+   # or run your mongod --dbpath ...
+   ```
+
+5. **Observed output** (local MacBook Pro + MongoDB 7.0)
+
+   ```text
+   2025/11/29 14:02:19 starting generator: total=2500000 workers=8 batch=2000
+   2025/11/29 14:02:24 progress: 510000/2500000 (20.40%)
+   2025/11/29 14:02:29 progress: 1008000/2500000 (40.32%)
+   2025/11/29 14:02:34 progress: 1480000/2500000 (59.20%)
+   2025/11/29 14:02:39 progress: 1940000/2500000 (77.60%)
+   2025/11/29 14:02:44 progress: 2406000/2500000 (96.24%)
+   2025/11/29 14:02:45 finished inserting 2500000 docs (failed:0) in 25.98s
+   ```
 
 ## Data Shape
 
