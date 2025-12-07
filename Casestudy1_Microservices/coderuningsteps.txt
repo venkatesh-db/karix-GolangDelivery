@@ -1,0 +1,62 @@
+
+step 1: docker compose up -d
+   run three servie kafka nats zookepper
+ 
+step 2 : create topics again
+
+docker ps to get containeid of kafka 
+ 
+docker exec -it 71a2f4f6420e  kafka-topics --bootstrap-server localhost:9092 --create --topic resume_uploaded --partitions 3 --replication-factor 1
+docker exec -it 71a2f4f6420e  kafka-topics --bootstrap-server localhost:9092 --create --topic shortlisted_candidates --partitions 3 --replication-factor 1
+ 
+step 3 : 
+
+validate whether all the topics present 
+docker exec -it 71a2f4f6420e kafka-topics --bootstrap-server localhost:9092 --list
+ 
+should see:
+resume_uploaded
+shortlisted_candidates
+ 
+step 4 : 
+then start all the microservices as mention above 
+go run main.go. 
+
+1.run resume collector 
+open terminal -->cmd/resume-collector
+run :
+
+MAc 
+export KAFKA_BROKERS=localhost:9092 
+export NATS_URL=nats://localhost:4222
+
+windows
+
+set KAFKA_BROKERS=localhost:9092 
+NATS_URL=nats://localhost:4222
+go run main.go
+
+2. interview-scheduler
+
+open terminal -->cmd/interview-scheduler
+run :
+export KAFKA_BROKERS=localhost:9092 
+export NATS_URL=nats://localhost:4222
+
+go run main.go
+
+3.shortlist-service
+
+open terminal -->cmd/short-list service
+run :
+set KAFKA_BROKERS=localhost:9092 
+NATS_URL=nats://localhost:4222
+go run main.go
+
+4. load -generator
+
+open terminal -->cmd/short-list service
+run :
+go run main.go
+
+NOTE :: PLEASE UPDATE THE CONTAINER NAME OR CONTAINER ID CORRECTLY
