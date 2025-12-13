@@ -1,0 +1,82 @@
+syntax = "proto3";
+
+package ride.v1;
+
+option go_package = "github.com/example/highperformancegrpcapi/gen/go/proto/ride/v1;ridev1";
+
+message LocationUpdate {
+  string user_id = 1;
+  double latitude = 2;
+  double longitude = 3;
+  double bearing = 4;
+  double speed_mps = 5;
+  int64 sequence = 6;
+  int64 sent_at_unix_millis = 7;
+}
+
+message RideStatusUpdate {
+  string ride_id = 1;
+  string user_id = 2;
+  enum Status {
+    STATUS_UNKNOWN = 0;
+    STATUS_LOOKING = 1;
+    STATUS_MATCHED = 2;
+    STATUS_DRIVER_ARRIVING = 3;
+    STATUS_IN_PROGRESS = 4;
+    STATUS_COMPLETED = 5;
+    STATUS_CANCELLED = 6;
+  }
+  Status status = 3;
+  string reason = 4;
+  int64 sent_at_unix_millis = 5;
+}
+
+message Heartbeat {
+  string user_id = 1;
+  int64 seq = 2;
+  int64 sent_at_unix_millis = 3;
+}
+
+message MatchEvent {
+  string ride_id = 1;
+  string driver_id = 2;
+  string rider_id = 3;
+  string vehicle_plate = 4;
+  int64 eta_seconds = 5;
+  double surge_multiplier = 6;
+}
+
+message Ack {
+  string correlation_id = 1;
+  bool success = 2;
+  string detail = 3;
+}
+
+message BroadcastEvent {
+  string topic = 1;
+  bytes payload = 2;
+}
+
+message ClientEnvelope {
+  string correlation_id = 1;
+  int64 lamport_time = 2;
+  oneof body {
+    LocationUpdate location_update = 10;
+    RideStatusUpdate ride_status_update = 11;
+    Heartbeat heartbeat = 12;
+  }
+}
+
+message ServerEnvelope {
+  string correlation_id = 1;
+  int64 lamport_time = 2;
+  oneof body {
+    MatchEvent match_event = 10;
+    Ack ack = 11;
+    BroadcastEvent broadcast_event = 12;
+  }
+}
+
+service RideStreamService {
+  rpc Connect(stream ClientEnvelope) returns (stream ServerEnvelope);
+}
