@@ -1,0 +1,12 @@
+go 1.22
+
+use (
+	./shared
+	./services/gateway
+	./services/user-service
+	./services/subscription-service
+	./services/billing-service
+	./services/payment-service
+	./services/invoicing-service
+	./services/notification-service
+)
