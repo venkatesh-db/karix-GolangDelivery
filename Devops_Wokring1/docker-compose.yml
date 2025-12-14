@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  api-gateway:
+    build:
+      context: ./api-gateway
+    ports:
+      - "8080:8080"
+    environment:
+      - PORT=8080
+      - USER_SERVICE_URL=http://user-service:8081
+      - ORDER_SERVICE_URL=http://order-service:8082
+    networks:
+      - app-network
+
+  user-service:
+    build:
+      context: ./user-service
+    environment:
+      - PORT=8081
+    ports:
+      - "8081:8081"
+    networks:
+      - app-network
+
+  order-service:
+    build:
+      context: ./order-service
+    environment:
+      - PORT=8082
+    ports:
+      - "8082:8082"
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
